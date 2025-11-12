@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 # Registering route modules
-#app.include_router(user_routes.router)
+app.include_router(user_routes.router)
 #app.include_router(item_routes.router)
 #app.include_router(cart_routes.router)
 #app.include_router(order_routes.router)
