@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fidgi
 
-## Getting Started
+Fidgi is a full-stack web application using Next.js for the frontend and FastAPI for the backend.
 
-First, run the development server:
+## Getting Started (Frontend)
+
+### 1. Clone the repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repo-url>
+cd Fidgi
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Create a `.env.local` file in the root directory
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Add your Clerk keys to `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
+CLERK_SECRET_KEY=your_clerk_secret_key_here
+```
 
-## Learn More
+-   Get these keys from your Clerk dashboard.
+-   **Do not commit `.env.local` to git.** It is already in `.gitignore`.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Install dependencies
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Run the frontend
 
-## Deploy on Vercel
+```bash
+pnpm dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The app will be available at `http://localhost:3000`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Getting Started (Backend)
+
+See `backend/README.md` for backend setup instructions.
+
+## Project Structure
+
+```
+Fidgi/
+├── app/           # Next.js app directory
+├── components/    # React components
+├── backend/       # FastAPI backend
+├── .env.local     # Clerk and other secrets (not committed)
+├── package.json   # Frontend dependencies
+└── ...
+```
+
+## Notes
+
+-   Make sure to keep your Clerk keys private.
+-   If you accidentally committed `.env.local`, remove it from git history and push again.
+-   For backend API authentication, the frontend will send Clerk session tokens to the backend.
