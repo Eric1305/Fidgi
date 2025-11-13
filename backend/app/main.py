@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from .routes import user_routes, item_routes, cart_routes, order_routes, admin_routes
 from .database import engine
 from .models import user_model
+from.dependencies import get_current_user
 
 # Create database tables
 user_model.Base.metadata.create_all(bind=engine)
@@ -17,7 +18,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure for production, allow_origins=["https://swagspinners.com", "https://www.swagspinners.com"],
+    allow_origins=["http://localhost:3000"],  # Configure for production, allow_origins=["https://swagspinners.com", "https://www.swagspinners.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,6 +53,15 @@ def read_root():
         "health": "/health"
     }
     
+@app.get("/me")
+def read_users_me(current_user = Depends(get_current_user)):
+    return {
+        "id": current_user.clerk_user_id,
+        "email": current_user.email,
+        "first_name": current_user.first_name,
+        "last_name": current_user.last_name,
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8080)
