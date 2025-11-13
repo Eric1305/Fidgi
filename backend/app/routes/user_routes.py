@@ -1,43 +1,22 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
+from ..database.db import create_user, get_all_users, get_user_by_clerk_id
+from ..utils import authenticate_and_get_user_details
+from ..database.models import get_db
 
-from ..schemas import user_schemas
-from ..models import user_model
-from ..database import get_db
-from ..dependencies import get_current_user # <-- Import your new dependency
+router = APIRouter(tags=["Users"])
 
-router = APIRouter(
-    prefix="/api/users",
-    tags=["Users"]
-)
+@router.get("/users")
+def list_users(db: Session = Depends(get_db)):
+    return get_all_users(db)
 
-@router.get("/me", response_model=user_schemas.User)
-def read_users_me(current_user: user_model.User = Depends(get_current_user)):
-    """
-    Get the profile for the currently logged-in user.
-    If the user doesn't exist in the database, they will be
-    created "just-in-time".
-    """
-    return current_user
+@router.get("/me")
+def get_my_profile(request: Request, db: Session = Depends(get_db)):
+    user_details = authenticate_and_get_user_details(request)
+    clerk_user_id = user_details.get("user_id")
 
-@router.put("/me", response_model=user_schemas.User)
-def update_users_me(
-    user_updates: user_schemas.UserBase, # Use UserBase (email, first, last)
-    current_user: user_model.User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """
-    Update the current user's app-specific profile information
-    (e.g., first_name, last_name).
-    """
-    # Get the update data from the request
-    update_data = user_updates.dict(exclude_unset=True)
-    
-    # Update the user object
-    for key, value in update_data.items():
-        setattr(current_user, key, value)
-    
-    db.add(current_user)
-    db.commit()
-    db.refresh(current_user)
-    return current_user
+    user = get_user_by_clerk_id(db, clerk_user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user

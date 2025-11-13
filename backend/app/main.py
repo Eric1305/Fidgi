@@ -1,12 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import user_routes, item_routes, cart_routes, order_routes, admin_routes
-from .database import engine
-from .models import user_model
-from.dependencies import get_current_user
-
-# Create database tables
-user_model.Base.metadata.create_all(bind=engine)
+from .routes import webhooks, user_routes
 
 # Intializing the FastAPI app
 app = FastAPI(
@@ -25,6 +19,7 @@ app.add_middleware(
 )
 
 # Registering route modules
+app.include_router(webhooks.router)
 app.include_router(user_routes.router)
 #app.include_router(item_routes.router)
 #app.include_router(cart_routes.router)
@@ -53,15 +48,3 @@ def read_root():
         "health": "/health"
     }
     
-@app.get("/me")
-def read_users_me(current_user = Depends(get_current_user)):
-    return {
-        "id": current_user.clerk_user_id,
-        "email": current_user.email,
-        "first_name": current_user.first_name,
-        "last_name": current_user.last_name,
-    }
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
