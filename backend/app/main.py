@@ -12,7 +12,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Configure for production, allow_origins=["https://swagspinners.com", "https://www.swagspinners.com"],
+    allow_origins=["*"],  # Configure for production, allow_origins=["https://swagspinners.com", "https://www.swagspinners.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

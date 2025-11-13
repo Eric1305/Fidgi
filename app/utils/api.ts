@@ -1,32 +1,26 @@
-import { useAuth } from "@clerk/clerk-react"
+import { auth } from "@clerk/nextjs/server";
 
-export const useApi = () => {
-    const {getToken} = useAuth()
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-    const makeRequest = async (endpoint, options = {}) => {
-        const token = await getToken()
-        const defaultOptions = {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
-        }
+export async function authenticatedFetch(
+  endpoint: string,
+  options: RequestInit = {}
+) {
+  const { getToken } = await auth();
+  const token = await getToken();
 
-        const response = await fetch(`http://localhost:8000/api/${endpoint}`, {
-            ...defaultOptions,
-            ...options,
-        })
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null)
-            if (response.status === 429) {
-                throw new Error("Daily quota exceeded")
-            }
-            throw new Error(errorData?.detail || "An error occurred")
-        }
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
 
-        return response.json()
-    }
-
-    return {makeRequest}
+  return response.json();
 }
