@@ -1,75 +1,43 @@
 "use client";
 
 import { ProductCard } from "@/components/product-card";
+import { useEffect, useState } from "react";
 
-const products = [
-  {
-    id: 1,
-    name: "Infinity Cube",
-    price: 24.99,
-    image: "/img/metallic-infinity-cube-fidget-toy.jpg",
-    category: "Cubes",
-    description: "Premium aluminum infinity cube with smooth rotation",
-  },
-  {
-    id: 2,
-    name: "Magnetic Spinner",
-    price: 19.99,
-    image: "/img/colorful-magnetic-fidget-spinner.jpg",
-    category: "Spinners",
-    description: "High-speed magnetic bearing spinner",
-  },
-  {
-    id: 3,
-    name: "Sensory Ring Set",
-    price: 14.99,
-    image: "/img/colorful-fidget-rings-set.jpg",
-    category: "Rings",
-    description: "Silicone textured rings for tactile stimulation",
-  },
-  {
-    id: 4,
-    name: "Fidget Pad Pro",
-    price: 29.99,
-    image: "/img/multi-function-fidget-pad-with-buttons.jpg",
-    category: "Pads",
-    description: "Multi-function pad with buttons, switches, and sliders",
-  },
-  {
-    id: 5,
-    name: "Mesh Marble",
-    price: 16.99,
-    image: "/img/mesh-and-marble-fidget-toy.jpg",
-    category: "Marbles",
-    description: "Stainless steel mesh with satisfying marble movement",
-  },
-  {
-    id: 6,
-    name: "Chain Links",
-    price: 12.99,
-    image: "/img/colorful-chain-link-fidget-toy.jpg",
-    category: "Chains",
-    description: "Interlocking chain links with smooth motion",
-  },
-  {
-    id: 7,
-    name: "Pop Bubble Keychain",
-    price: 9.99,
-    image: "/img/pop-bubble-fidget-keychain.jpg",
-    category: "Keychains",
-    description: "Portable pop bubble sensory keychain",
-  },
-  {
-    id: 8,
-    name: "Roller Chain",
-    price: 21.99,
-    image: "/img/metal-roller-chain-fidget-toy.jpg",
-    category: "Chains",
-    description: "Silent roller chain with premium finish",
-  },
-];
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  description: string;
+}
 
 export function ProductGrid() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch(`${API_URL}/items`);
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, [API_URL]);
+
+  if (loading) {
+    return <div className="text-center py-16">Loading products...</div>;
+  }
+
   return (
     <section id="products" className="py-16 md:py-24 mt-10">
       <div className="container mx-auto px-4">
