@@ -29,8 +29,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="antialiased">
-          <Navbar />
+        <body className="antialiased"> 
           {children}
         </body>
       </html>

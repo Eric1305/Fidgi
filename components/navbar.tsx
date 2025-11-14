@@ -1,3 +1,4 @@
+"use client";
 // components/Navbar.tsx
 import React, { FC } from "react";
 import {
@@ -12,9 +13,23 @@ import { Search } from "lucide-react";
 
 interface NavbarProps {
   cartItemCount?: number;
+  setSearchTerm?: (term: string) => void; 
 }
 
-const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
+const Navbar: FC<NavbarProps> = ({ cartItemCount = 0, setSearchTerm }) => {
+  
+  const [localSearch, setLocalSearch] = React.useState("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalSearch(value);
+    if (setSearchTerm) {
+      setSearchTerm(value);
+  }
+
+  };
+    
+
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50 flex justify-between items-center px-4 h-16 border-b-gray-600 ">
       {/* Logo */}
@@ -26,6 +41,8 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
           <input
             type="text"
             placeholder="Search products..."
+            value={localSearch}      
+            onChange={handleChange}
             className="border rounded-md pl-10 pr-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -60,5 +77,6 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
     </nav>
   );
 };
+
 
 export default Navbar;

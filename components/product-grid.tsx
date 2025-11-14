@@ -12,12 +12,16 @@ interface Product {
   description: string;
 }
 
-export function ProductGrid() {
+interface ProductGridProps {
+  searchTerm: string; 
+}
+
+export function ProductGrid({ searchTerm }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
+  
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -29,7 +33,7 @@ export function ProductGrid() {
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchProducts();
   }, [API_URL]);
@@ -37,6 +41,10 @@ export function ProductGrid() {
   if (loading) {
     return <div className="text-center py-16">Loading products...</div>;
   }
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <section id="products" className="py-16 md:py-24 mt-10">
@@ -52,7 +60,7 @@ export function ProductGrid() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
