@@ -159,3 +159,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# clerk configuration (can include secrets)
+/.clerk/

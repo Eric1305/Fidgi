@@ -67,45 +67,62 @@ export default function TestProfile() {
     }
   }, [user, getToken, API_URL]);
 
-  const mono = { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' } as const;
+  const mono = {
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  } as const;
 
   if (loading) {
-    return <div style={{ padding: '1rem', color: 'white', ...mono }}>Loading…</div>;
+    return (
+      <div style={{ padding: "1rem", color: "white", ...mono }}>Loading…</div>
+    );
   }
 
   if (error) {
     return (
-      <div style={{ padding: '1rem', color: 'white', ...mono }}>
+      <div style={{ padding: "1rem", color: "white", ...mono }}>
         ERROR: {error}\nBackend: {API_URL}
       </div>
     );
   }
 
   return (
-    <pre style={{ padding: '1rem', margin: 0, color: 'white', background: 'transparent', ...mono }}>
-Test Page
---------------------------------------------------
-Clerk User:
-  ID: {user?.id}
-  Name: {user?.fullName}
-  Email: {user?.primaryEmailAddress?.emailAddress}
-
-Database Profile (/me):
-{profile ? `  DB ID: ${profile.id}
+    <pre
+      style={{
+        padding: "1rem",
+        margin: 0,
+        color: "white",
+        background: "transparent",
+        ...mono,
+      }}
+    >
+      Test Page -------------------------------------------------- Clerk User:
+      ID: {user?.id}
+      Name: {user?.fullName}
+      Email: {user?.primaryEmailAddress?.emailAddress}
+      Database Profile (/me):
+      {profile
+        ? `  DB ID: ${profile.id}
   Clerk User ID: ${profile.clerk_user_id}
-  Name: ${profile.name || 'N/A'}
-  Email: ${profile.email || 'N/A'}
-  Created At: ${new Date(profile.created_at).toLocaleString()}` : '  <none>'}
-
-All Users (/users): count={allUsers.length}
-{allUsers.map(u => `  - id=${u.id} clerk_user_id=${u.clerk_user_id} name=${u.name || 'N/A'} email=${u.email || 'N/A'} created=${new Date(u.created_at).toLocaleDateString()}`).join('\n') || '  <none>'}
-
-Checks:
-  Auth token passed: {Boolean(user) ? 'yes' : 'no'}
-  Profile loaded: {profile ? 'yes' : 'no'}
-  Users loaded: {allUsers.length > 0 ? 'yes' : 'no'}
-  Backend URL: {API_URL}
---------------------------------------------------
+  Name: ${profile.name || "N/A"}
+  Email: ${profile.email || "N/A"}
+  Created At: ${new Date(profile.created_at).toLocaleString()}`
+        : "  <none>"}
+      All Users (/users): count={allUsers.length}
+      {allUsers
+        .map(
+          (u) =>
+            `  - id=${u.id} clerk_user_id=${u.clerk_user_id} name=${
+              u.name || "N/A"
+            } email=${u.email || "N/A"} created=${new Date(
+              u.created_at
+            ).toLocaleDateString()}`
+        )
+        .join("\n") || "  <none>"}
+      Checks: Auth token passed: {Boolean(user) ? "yes" : "no"}
+      Profile loaded: {profile ? "yes" : "no"}
+      Users loaded: {allUsers.length > 0 ? "yes" : "no"}
+      Backend URL: {API_URL}
+      --------------------------------------------------
     </pre>
   );
 }

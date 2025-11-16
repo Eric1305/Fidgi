@@ -21,7 +21,7 @@ if [ -f "requirements.txt" ]; then
     pip install -r requirements.txt
 else
     echo "requirements.txt not found. Installing default dependencies..."
-    pip install fastapi uvicorn psycopg2-binary sqlalchemy python-dotenv
+    pip install fastapi uvicorn psycopg2-bipnary sqlalchemy python-dotenv
     echo "Freezing installed packages to requirements.txt..."
     pip freeze > requirements.txt
 fi
