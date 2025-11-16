@@ -1,3 +1,4 @@
+"use client";
 // components/Navbar.tsx
 import React, { FC } from "react";
 import {
@@ -9,12 +10,14 @@ import {
 } from "@clerk/nextjs";
 import { ShoppingCart } from "lucide-react";
 import { Search } from "lucide-react";
+import { useShoppingCart } from "@/app/context/CartContext";
 
 interface NavbarProps {
   cartItemCount?: number;
 }
 
 const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
+  const { openCart, cartQuantity } = useShoppingCart(); // use context
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50 flex justify-between items-center px-4 h-16 border-b-gray-600 ">
       {/* Logo */}
@@ -31,14 +34,14 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
         </div>
 
-        <a href="/cart" className="relative">
+        <button onClick={openCart} className="relative">
           <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-gray-900" />
           {cartItemCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
               {cartItemCount}
             </span>
           )}
-        </a>
+        </button>
 
         {/* Clerk Auth Buttons */}
         <SignedOut>

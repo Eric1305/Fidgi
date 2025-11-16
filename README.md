@@ -135,7 +135,7 @@ cd backend
 ./run.sh
 ```
 
-The backend will run on `http://localhost:8000`.
+The backend will run on `http://localhost:3000`.
 
 **Terminal 2 - Start Frontend:**
 
