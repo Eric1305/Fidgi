@@ -14,11 +14,20 @@ import { useShoppingCart } from "@/app/context/CartContext";
 
 interface NavbarProps {
   cartItemCount?: number;
-  setSearchTerm?: (term: string) => void; 
+  setSearchTerm?: (term: string) => void;
 }
 
-const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
+const Navbar: FC<NavbarProps> = ({ cartItemCount = 0, setSearchTerm }) => {
+  const [localSearch, setLocalSearch] = React.useState("");
   const { openCart, cartQuantity } = useShoppingCart(); // use context
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalSearch(value);
+    if (setSearchTerm) {
+      setSearchTerm(value);
+    }
+  };
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50 flex justify-between items-center px-4 h-16 border-b-gray-600 ">
       {/* Logo */}
@@ -30,7 +39,7 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
           <input
             type="text"
             placeholder="Search products..."
-            value={localSearch}      
+            value={localSearch}
             onChange={handleChange}
             className="border rounded-md pl-10 pr-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -66,6 +75,5 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
     </nav>
   );
 };
-
 
 export default Navbar;
