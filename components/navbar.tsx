@@ -14,6 +14,7 @@ import { useShoppingCart } from "@/app/context/CartContext";
 
 interface NavbarProps {
   cartItemCount?: number;
+  setSearchTerm?: (term: string) => void; 
 }
 
 const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
@@ -29,6 +30,8 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
           <input
             type="text"
             placeholder="Search products..."
+            value={localSearch}      
+            onChange={handleChange}
             className="border rounded-md pl-10 pr-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -63,5 +66,6 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0 }) => {
     </nav>
   );
 };
+
 
 export default Navbar;
