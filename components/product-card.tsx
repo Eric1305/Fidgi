@@ -1,9 +1,11 @@
 "use client";
 
-import Image from "next/image";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { useShoppingCart } from "@/app/context/CartContext";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
 
 interface Product {
   id: number;
@@ -16,8 +18,20 @@ interface Product {
 }
 
 export function ProductCard({ product }: { product: Product }) {
+  const { addToCart } = useShoppingCart();
+  const [isAdding, setIsAdding] = useState(false);
+  
   const isOutOfStock = product.quantity === 0;
   const isLowStock = product.quantity > 0 && product.quantity <= 5;
+
+  const handleAddToCart = async () => {
+    setIsAdding(true);
+    try {
+      await addToCart(product.id, 1);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
@@ -58,9 +72,14 @@ export function ProductCard({ product }: { product: Product }) {
       </CardContent>
       <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <span className="text-2xl font-bold">${product.price}</span>
-        <Button size="sm" className="gap-2" disabled={isOutOfStock}>
+        <Button 
+          size="sm" 
+          className="gap-2" 
+          disabled={isOutOfStock || isAdding}
+          onClick={handleAddToCart}
+        >
           <ShoppingCart className="h-4 w-4" />
-          {isOutOfStock ? "Out of Stock" : "Add"}
+          {isAdding ? "Adding..." : isOutOfStock ? "Out of Stock" : "Add"}
         </Button>
       </CardFooter>
     </Card>

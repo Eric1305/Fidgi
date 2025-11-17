@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from ..database.db import (
+    create_user,
     get_item_by_id,
     get_user_by_clerk_id,
     add_to_cart,
@@ -34,7 +35,7 @@ def add_item_to_cart(
     # Get user from database
     user = get_user_by_clerk_id(db, clerk_user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        user = create_user(db, clerk_user_id, name="User", email="")
     
     # Check if item exists
     item = get_item_by_id(db, cart_request.item_id)
