@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, create_engine
+from sqlalchemy import Column, Integer, String, DateTime, Float, create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -24,9 +24,25 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, nullable=False)
-    item = Column(String, nullable=False)
-    quantity = Column(Integer, default=1)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    subtotal = Column(Float, nullable=False)
+    discount = Column(Float, default=0.0)
+    tax = Column(Float, nullable=False)
+    total = Column(Float, nullable=False)
+    discount_code = Column(String, nullable=True)
+    stripe_payment_id = Column(String, nullable=False)
+    status = Column(String, default="pending")
+    created_at = Column(DateTime, default=datetime.now)
+
+class OrderItem(Base):
+    __tablename__ = "order_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
+    name = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
+    quantity = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
 
 class Item(Base):

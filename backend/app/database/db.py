@@ -58,13 +58,11 @@ def add_to_cart(db: Session, user_id: int, item_id: int, quantity: int = 1):
     ).first()
     
     if existing:
-        # Update quantity
         existing.quantity += quantity
         db.commit()
         db.refresh(existing)
         return existing
     
-    # Create new cart item
     cart_item = models.Cart(
         user_id=user_id,
         item_id=item_id,
@@ -93,3 +91,140 @@ def remove_from_cart(db: Session, cart_item_id: int):
         db.commit()
         return True
     return False
+
+# Order CRUD operations
+
+def create_order(db: Session, user_id: int, items: list, subtotal: float, discount: float, tax: float, total: float, discount_code: str = None, stripe_payment_id: str = None):
+    order = models.Order(
+        user_id=user_id,
+        subtotal=subtotal,
+        discount=discount,
+        tax=tax,
+        total=total,
+        discount_code=discount_code,
+        stripe_payment_id=stripe_payment_id,
+        status="pending"
+    )
+    db.add(order)
+    db.flush()
+    
+    for item_data in items:
+        order_item = models.OrderItem(
+            order_id=order.id,
+            item_id=item_data["item_id"],
+            name=item_data["name"],
+            price=item_data["price"],
+            quantity=item_data["quantity"]
+        )
+        db.add(order_item)
+        
+        item = get_item_by_id(db, item_data["item_id"])
+        if item:
+            item.quantity -= item_data["quantity"]
+    
+    db.query(models.Cart).filter(models.Cart.user_id == user_id).delete()
+    
+    db.commit()
+    db.refresh(order)
+    return order
+
+def get_user_orders(db: Session, user_id: int):
+    orders = db.query(models.Order).filter(
+        models.Order.user_id == user_id
+    ).order_by(models.Order.created_at.desc()).all()
+    
+    result = []
+    for order in orders:
+        order_items = db.query(models.OrderItem).filter(
+            models.OrderItem.order_id == order.id
+        ).all()
+        
+        result.append({
+            "id": order.id,
+            "subtotal": order.subtotal,
+            "discount": order.discount,
+            "tax": order.tax,
+            "total": order.total,
+            "discount_code": order.discount_code,
+            "status": order.status,
+            "created_at": order.created_at,
+            "items": [{
+                "item_id": item.item_id,
+                "name": item.name,
+                "price": item.price,
+                "quantity": item.quantity
+            } for item in order_items]
+        })
+    
+    return result
+
+def get_order_by_id(db: Session, order_id: int):
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    
+    if not order:
+        return None
+    
+    order_items = db.query(models.OrderItem).filter(
+        models.OrderItem.order_id == order.id
+    ).all()
+    
+    return {
+        "id": order.id,
+        "user_id": order.user_id,
+        "subtotal": order.subtotal,
+        "discount": order.discount,
+        "tax": order.tax,
+        "total": order.total,
+        "discount_code": order.discount_code,
+        "stripe_payment_id": order.stripe_payment_id,
+        "status": order.status,
+        "created_at": order.created_at,
+        "items": [{
+            "item_id": item.item_id,
+            "name": item.name,
+            "price": item.price,
+            "quantity": item.quantity
+        } for item in order_items]
+    }
+
+def get_all_orders(db: Session, sort_by: str = "date", order: str = "desc"):
+    from sqlalchemy import desc, asc
+    
+    query = db.query(models.Order)
+    
+    if sort_by == "amount":
+        query = query.order_by(desc(models.Order.total) if order == "desc" else asc(models.Order.total))
+    elif sort_by == "customer":
+        query = query.order_by(desc(models.Order.user_id) if order == "desc" else asc(models.Order.user_id))
+    else:  # date
+        query = query.order_by(desc(models.Order.created_at) if order == "desc" else asc(models.Order.created_at))
+    
+    orders = query.all()
+    
+    result = []
+    for order in orders:
+        user = db.query(models.User).filter(models.User.id == order.user_id).first()
+        order_items = db.query(models.OrderItem).filter(models.OrderItem.order_id == order.id).all()
+        
+        result.append({
+            "id": order.id,
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email
+            } if user else None,
+            "subtotal": order.subtotal,
+            "discount": order.discount,
+            "tax": order.tax,
+            "total": order.total,
+            "discount_code": order.discount_code,
+            "status": order.status,
+            "created_at": order.created_at,
+            "items": [{
+                "name": item.name,
+                "price": item.price,
+                "quantity": item.quantity
+            } for item in order_items]
+        })
+    
+    return result
