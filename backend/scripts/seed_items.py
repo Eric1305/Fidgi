@@ -3,7 +3,8 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from app.database.models import SessionLocal
+from app.database import models
+from app.database.models import SessionLocal, discountCode
 from app.database.db import create_item
 
 db = SessionLocal()
@@ -76,7 +77,23 @@ items = [
 ]
 
 for item_data in items:
-    create_item(db, **item_data)
+    existing = db.query(models.Item).filter(models.Item.name == item_data["name"]).first()
+    if not existing:
+        create_item(db, **item_data)
+    
+codes = [
+    {"code": "THOMAS10", "discount_percentage": 10},
+    {"code": "ERIC20", "discount_percentage": 20},
+    {"code": "FREEMONEY25", "discount_percentage": 25},
+]
 
-print("Seeded %d items successfully!" % len(items))
+for code_data in codes:
+    existing = db.query(discountCode).filter(discountCode.code == code_data["code"]).first()
+    if not existing:
+        discount = discountCode(**code_data)
+        db.add(discount)
+
+db.commit()
+db.refresh(discount)
+print("Seeded %d items and %d discount codes successfully!" % (len(items), len(codes)))
 db.close()
