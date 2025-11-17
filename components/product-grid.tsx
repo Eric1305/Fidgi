@@ -10,6 +10,7 @@ interface Product {
   image: string;
   category: string;
   description: string;
+  quantity: number;
 }
 
 interface ProductGridProps {

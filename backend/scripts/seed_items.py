@@ -23,7 +23,7 @@ items = [
         "image": "/img/colorful-magnetic-fidget-spinner.jpg",
         "category": "Spinners",
         "description": "High-speed magnetic bearing spinner",
-        "quantity": 75
+        "quantity": 0
     },
     {
         "name": "Sensory Ring Set",
@@ -31,7 +31,7 @@ items = [
         "image": "/img/colorful-fidget-rings-set.jpg",
         "category": "Rings",
         "description": "Silicone textured rings for tactile stimulation",
-        "quantity": 100
+        "quantity": 4
     },
     {
         "name": "Fidget Pad Pro",
@@ -39,7 +39,7 @@ items = [
         "image": "/img/multi-function-fidget-pad-with-buttons.jpg",
         "category": "Pads",
         "description": "Multi-function pad with buttons, switches, and sliders",
-        "quantity": 30
+        "quantity": 3
     },
     {
         "name": "Mesh Marble",

@@ -47,3 +47,49 @@ def delete_item(db: Session, item_id: int):
         db.delete(db_item)
         db.commit()
     return db_item
+
+# Cart CRUD operations
+
+def add_to_cart(db: Session, user_id: int, item_id: int, quantity: int = 1):
+    # Check if item already in cart
+    existing = db.query(models.Cart).filter(
+        models.Cart.user_id == user_id,
+        models.Cart.item_id == item_id
+    ).first()
+    
+    if existing:
+        # Update quantity
+        existing.quantity += quantity
+        db.commit()
+        db.refresh(existing)
+        return existing
+    
+    # Create new cart item
+    cart_item = models.Cart(
+        user_id=user_id,
+        item_id=item_id,
+        quantity=quantity
+    )
+    db.add(cart_item)
+    db.commit()
+    db.refresh(cart_item)
+    return cart_item
+
+def get_user_cart(db: Session, user_id: int):
+    return db.query(models.Cart).filter(models.Cart.user_id == user_id).all()
+
+def update_cart_item(db: Session, cart_item_id: int, quantity: int):
+    cart_item = db.query(models.Cart).filter(models.Cart.id == cart_item_id).first()
+    if cart_item:
+        cart_item.quantity = quantity
+        db.commit()
+        db.refresh(cart_item)
+    return cart_item
+
+def remove_from_cart(db: Session, cart_item_id: int):
+    cart_item = db.query(models.Cart).filter(models.Cart.id == cart_item_id).first()
+    if cart_item:
+        db.delete(cart_item)
+        db.commit()
+        return True
+    return False

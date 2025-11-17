@@ -50,6 +50,10 @@ def create_new_item(
     db: Session = Depends(get_db)
 ):
     authenticate_and_get_user_details(request)  # Just check auth for now
+    
+    if item.quantity < 0:
+        raise HTTPException(status_code=400, detail="Quantity cannot be negative")
+    
     return create_item(
         db,
         name=item.name,
