@@ -29,21 +29,17 @@ def add_item_to_cart(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Add item to cart - checks stock availability"""
     user_details = authenticate_and_get_user_details(request)
     clerk_user_id = user_details.get("user_id")
     
-    # Get user from database
     user = get_user_by_clerk_id(db, clerk_user_id)
     if not user:
         user = create_user(db, clerk_user_id, name="User", email="")
     
-    # Check if item exists
     item = get_item_by_id(db, cart_request.item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
-    # Check stock availability
     if item.quantity < cart_request.quantity:
         raise HTTPException(
             status_code=400, 
@@ -53,7 +49,6 @@ def add_item_to_cart(
     if item.quantity == 0:
         raise HTTPException(status_code=400, detail="Item out of stock")
     
-    # Add to cart
     cart_item = add_to_cart(db, user.id, cart_request.item_id, cart_request.quantity)
     
     return {
@@ -66,7 +61,6 @@ def get_cart(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Get user's cart with item details"""
     user_details = authenticate_and_get_user_details(request)
     clerk_user_id = user_details.get("user_id")
     
@@ -76,12 +70,10 @@ def get_cart(
     
     cart_items = get_user_cart(db, user.id)
     
-    # Add item details and stock check to each cart item
     cart_with_details = []
     for cart_item in cart_items:
         item = get_item_by_id(db, cart_item.item_id)
         
-        # Check if item is still in stock
         in_stock = item.quantity >= cart_item.quantity
         
         cart_with_details.append({
@@ -107,15 +99,12 @@ def update_cart_quantity(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Update cart item quantity - checks stock"""
     user_details = authenticate_and_get_user_details(request)
     
-    # Get cart item and verify ownership
     cart_item = db.query(models.Cart).filter(models.Cart.id == cart_item_id).first()
     if not cart_item:
         raise HTTPException(status_code=404, detail="Cart item not found")
     
-    # Check stock
     item = get_item_by_id(db, cart_item.item_id)
     if item.quantity < cart_update.quantity:
         raise HTTPException(
@@ -123,7 +112,6 @@ def update_cart_quantity(
             detail=f"Only {item.quantity} items available in stock"
         )
     
-    # Update quantity
     updated_cart_item = update_cart_item(db, cart_item_id, cart_update.quantity)
     
     return {"message": "Cart updated", "cart_item": updated_cart_item}
@@ -134,7 +122,6 @@ def remove_item_from_cart(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Remove item from cart"""
     user_details = authenticate_and_get_user_details(request)
     
     removed = remove_from_cart(db, cart_item_id)

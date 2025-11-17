@@ -11,7 +11,6 @@ def get_discount_code(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Validate and get discount code"""
     authenticate_and_get_user_details(request)
     
     discount = db.query(discountCode).filter(

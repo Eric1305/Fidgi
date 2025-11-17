@@ -13,7 +13,6 @@ from ..utils import authenticate_and_get_user_details
 
 router = APIRouter(prefix="/items", tags=["Items"])
 
-# Pydantic models for request/response
 class ItemCreate(BaseModel):
     name: str
     price: float
@@ -30,7 +29,6 @@ class ItemUpdate(BaseModel):
     category: str = None
     quantity: int = None
 
-# Public routes
 @router.get("/")
 def list_items(db: Session = Depends(get_db)):
     return get_all_items(db)
@@ -42,14 +40,13 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found")
     return item
 
-# Protected routes (require authentication)
 @router.post("/")
 def create_new_item(
     item: ItemCreate,
     request: Request,
     db: Session = Depends(get_db)
 ):
-    authenticate_and_get_user_details(request)  # Just check auth for now
+    authenticate_and_get_user_details(request)
     
     if item.quantity < 0:
         raise HTTPException(status_code=400, detail="Quantity cannot be negative")
@@ -73,7 +70,6 @@ def update_existing_item(
 ):
     authenticate_and_get_user_details(request)
     
-    # Filter out None values
     update_data = {k: v for k, v in item.dict().items() if v is not None}
     
     updated_item = update_item(db, item_id, **update_data)

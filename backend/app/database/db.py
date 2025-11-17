@@ -51,7 +51,6 @@ def delete_item(db: Session, item_id: int):
 # Cart CRUD operations
 
 def add_to_cart(db: Session, user_id: int, item_id: int, quantity: int = 1):
-    # Check if item already in cart
     existing = db.query(models.Cart).filter(
         models.Cart.user_id == user_id,
         models.Cart.item_id == item_id
@@ -196,7 +195,7 @@ def get_all_orders(db: Session, sort_by: str = "date", order: str = "desc"):
         query = query.order_by(desc(models.Order.total) if order == "desc" else asc(models.Order.total))
     elif sort_by == "customer":
         query = query.order_by(desc(models.Order.user_id) if order == "desc" else asc(models.Order.user_id))
-    else:  # date
+    else:
         query = query.order_by(desc(models.Order.created_at) if order == "desc" else asc(models.Order.created_at))
     
     orders = query.all()

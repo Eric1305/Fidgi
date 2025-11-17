@@ -18,6 +18,7 @@ class User(Base):
     clerk_user_id = Column(String, nullable=False, unique=True)
     name = Column(String, nullable=True)
     email = Column(String, nullable=True)
+    is_admin = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.now)
 
 class Order(Base):

@@ -1,5 +1,6 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Request, Depends
 from clerk_backend_api import Clerk, AuthenticateRequestOptions
+from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
 
@@ -26,3 +27,18 @@ def authenticate_and_get_user_details(request):
         return {"user_id": user_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def require_admin(request: Request, db: Session):
+    from .database.db import get_user_by_clerk_id
+    
+    user_details = authenticate_and_get_user_details(request)
+    clerk_user_id = user_details.get("user_id")
+    
+    user = get_user_by_clerk_id(db, clerk_user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    return user

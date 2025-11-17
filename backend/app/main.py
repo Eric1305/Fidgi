@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import webhooks, user_routes, item_routes, cart_routes, discount_routes
+from .routes import webhooks, user_routes, item_routes, cart_routes, discount_routes, admin_routes, order_routes
 
-# Intializing the FastAPI app
+# Intialize app
 app = FastAPI(
     title="Fidgi API",
     description="Fidget toy e-commerce platform",
@@ -24,8 +24,8 @@ app.include_router(user_routes.router)
 app.include_router(item_routes.router)
 app.include_router(cart_routes.router)
 app.include_router(discount_routes.router)
-#app.include_router(order_routes.router)
-#app.include_router(admin_routes.router)
+app.include_router(admin_routes.router)
+app.include_router(order_routes.router)
 
 
 @app.get("/health")

@@ -47,23 +47,18 @@ def create_new_order(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Create order from cart - validates stock and clears cart"""
     user_details = authenticate_and_get_user_details(request)
     clerk_user_id = user_details.get("user_id")
     
-    # Get user
     user = get_user_by_clerk_id(db, clerk_user_id)
     if not user:
-        # Auto-create if doesn't exist
         from ..database.db import create_user
         user = create_user(db, clerk_user_id)
     
-    # Get cart items
     cart_items = get_user_cart(db, user.id)
     if not cart_items:
         raise HTTPException(status_code=400, detail="Cart is empty")
     
-    # Validate stock for all items
     order_items = []
     subtotal = 0.0
     
@@ -92,7 +87,6 @@ def create_new_order(
             "quantity": cart_item.quantity
         })
     
-    # Calculate discount
     discount_amount = 0.0
     if order_request.discount_code:
         from ..database.models import discountCode
@@ -103,12 +97,10 @@ def create_new_order(
         if discount:
             discount_amount = subtotal * (discount.discount_percentage / 100)
     
-    # Calculate tax (8.25%)
     after_discount = subtotal - discount_amount
     tax = after_discount * 0.0825
     total = after_discount + tax
     
-    # Create order
     order = create_order(
         db,
         user_id=user.id,
@@ -132,7 +124,6 @@ def get_my_orders(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Get current user's orders"""
     user_details = authenticate_and_get_user_details(request)
     clerk_user_id = user_details.get("user_id")
     
@@ -149,7 +140,6 @@ def get_order_details(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Get specific order details"""
     user_details = authenticate_and_get_user_details(request)
     clerk_user_id = user_details.get("user_id")
     
@@ -161,7 +151,6 @@ def get_order_details(
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
-    # Verify order belongs to user (or user is admin)
     if order.user_id != user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
@@ -172,10 +161,9 @@ def get_order_details(
 def get_all_orders_admin(
     request: Request,
     db: Session = Depends(get_db),
-    sort_by: Optional[str] = "date",  # date, customer, amount
-    order: Optional[str] = "desc"  # asc, desc
+    sort_by: Optional[str] = "date",
+    order: Optional[str] = "desc"
 ):
-    """Get all orders - admin only"""
     user_details = authenticate_and_get_user_details(request)
     
     orders = get_all_orders(db, sort_by=sort_by, order=order)
@@ -188,7 +176,6 @@ def update_order_status(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Update order status - admin only"""
     user_details = authenticate_and_get_user_details(request)
     
     from ..database.models import Order
