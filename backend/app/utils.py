@@ -1,5 +1,6 @@
 from fastapi import HTTPException, Request, Depends
 from clerk_backend_api import Clerk, AuthenticateRequestOptions
+from .database.models import get_db
 from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
@@ -28,7 +29,8 @@ def authenticate_and_get_user_details(request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def require_admin(request: Request, db: Session):
+def require_admin(request: Request, db: Session = Depends(get_db)):
+    """Dependency to ensure user is authenticated and has admin privileges"""
     from .database.db import get_user_by_clerk_id
     
     user_details = authenticate_and_get_user_details(request)
