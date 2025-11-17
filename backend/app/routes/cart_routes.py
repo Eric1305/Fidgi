@@ -11,6 +11,7 @@ from ..database.db import (
     remove_from_cart
 )
 from ..database.models import get_db
+from ..database import models
 from ..utils import authenticate_and_get_user_details
 
 router = APIRouter(prefix="/cart", tags=["Cart"])
