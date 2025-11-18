@@ -98,6 +98,15 @@ def admin_delete_item(
     
     return {"message": "Item deleted successfully"}
 
+@router.get("/items")
+def admin_get_all_items(
+    request: Request = None,
+    admin_user = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    items = get_all_items(db)
+    return items
+
 # Users
 
 @router.get("/users")
