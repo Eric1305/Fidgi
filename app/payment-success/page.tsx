@@ -30,7 +30,7 @@ export default function OrderConfirmationPage() {
 
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-3xl">
         {/* Success Header */}
-        <div className="text-center mb-8 md:mb-12">
+        <div className="text-center mb-6 md:mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-100 mb-4 md:mb-6 animate-in zoom-in duration-300">
             <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 text-blue-500" />
           </div>
@@ -42,9 +42,6 @@ export default function OrderConfirmationPage() {
             <Heart className="w-4 h-4 text-blue-500 inline-block fill-blue-500" />
           </p>
         </div>
-        <p className="flex justify-center mb-3 text-base md:text-lg">
-          Need to add functionality here lul
-        </p>
         {/* Order Summary */}
         <Card className="mb-6">
           <CardHeader>
@@ -122,10 +119,6 @@ export default function OrderConfirmationPage() {
                   business days
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">•</span>
-                <span>Track your order anytime using your order number</span>
-              </li>
             </ul>
           </CardContent>
         </Card>
@@ -134,9 +127,6 @@ export default function OrderConfirmationPage() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Button asChild className="flex-1" size="lg">
             <Link href="/">Continue Shopping</Link>
-          </Button>
-          <Button asChild variant="outline" className="flex-1" size="lg">
-            <Link href="/orders">View Order Status</Link>
           </Button>
         </div>
 
