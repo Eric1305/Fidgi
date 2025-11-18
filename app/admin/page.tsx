@@ -1,7 +1,7 @@
 'use client';
 
-import { Check, Edit, Plus, Search, Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Trash2, Edit, Plus, X, Check, Search } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -135,7 +135,7 @@ export default function AdminPanel() {
   const fetchDiscounts = async () => {
     setLoading(true);
     try {
-      const data = await fetchWithAuth(`${API_URL}/admin/discounts`);
+      const data = await fetchWithAuth(`${API_URL}/discount/`);
       setDiscounts(data);
     } catch (error) {
       console.error('Error fetching discounts:', error);
@@ -145,7 +145,7 @@ export default function AdminPanel() {
 
   const createDiscount = async () => {
     try {
-      await fetchWithAuth(`${API_URL}/admin/discounts`, {
+      await fetchWithAuth(`${API_URL}/discount/`, {
         method: 'POST',
         body: JSON.stringify({
           code: discountForm.code.toUpperCase(),
@@ -163,7 +163,7 @@ export default function AdminPanel() {
   const deleteDiscount = async (id) => {
     if (!confirm('Are you sure you want to delete this discount code?')) return;
     try {
-      await fetchWithAuth(`${API_URL}/admin/discounts/${id}`, { method: 'DELETE' });
+      await fetchWithAuth(`${API_URL}/discount/${id}`, { method: 'DELETE' });
       fetchDiscounts();
     } catch (error) {
       console.error('Error deleting discount:', error);
