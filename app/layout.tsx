@@ -23,6 +23,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const metadata = {
+  title: "Fidgi",
+  description: "Fidgi online store",
+};
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,6 +35,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <head>
+          <title>{metadata.title}</title>
+        </head>
         <body className="antialiased">
           <CartProvider>
             {children}
