@@ -11,13 +11,13 @@ import {
 import { ShoppingCart } from "lucide-react";
 import { Search } from "lucide-react";
 import { useShoppingCart } from "@/app/context/CartContext";
+import Link from "next/link";
 
 interface NavbarProps {
-  cartItemCount?: number;
   setSearchTerm?: (term: string) => void;
 }
 
-const Navbar: FC<NavbarProps> = ({ cartItemCount = 0, setSearchTerm }) => {
+const Navbar: FC<NavbarProps> = ({ setSearchTerm }) => {
   const [localSearch, setLocalSearch] = React.useState("");
   const { openCart, cartQuantity } = useShoppingCart(); // use context
 
@@ -31,8 +31,9 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0, setSearchTerm }) => {
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50 flex justify-between items-center px-4 h-16 border-b-gray-600 ">
       {/* Logo */}
-      <div className="text-2xl font-bold text-gray-800">Fidgi</div>
-
+      <Link href="/" className="flex items-center">
+        <span className="text-2xl font-bold text-gray-800">Fidgi</span>
+      </Link>
       {/* Auth + Cart */}
       <div className="flex items-center space-x-4">
         <div className="relative">
@@ -48,9 +49,9 @@ const Navbar: FC<NavbarProps> = ({ cartItemCount = 0, setSearchTerm }) => {
 
         <button onClick={openCart} className="relative">
           <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-gray-900" />
-          {cartItemCount > 0 && (
+          {cartQuantity > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {cartItemCount}
+              {cartQuantity}
             </span>
           )}
         </button>

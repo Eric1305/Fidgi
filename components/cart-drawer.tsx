@@ -15,9 +15,20 @@ import Link from "next/link";
 import Image from "next/image";
 
 export function CartDrawer() {
-  const { isOpen, closeCart, cartQuantity, cartItems, updateQuantity, removeFromCart, isLoading } = useShoppingCart();
+  const {
+    isOpen,
+    closeCart,
+    cartQuantity,
+    cartItems,
+    updateQuantity,
+    removeFromCart,
+    isLoading,
+  } = useShoppingCart();
 
-  const total = cartItems.reduce((sum, item) => sum + (item.item.price * item.quantity), 0);
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.item.price * item.quantity,
+    0
+  );
 
   return (
     <Sheet open={isOpen} onOpenChange={closeCart}>
@@ -29,7 +40,7 @@ export function CartDrawer() {
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto py-4">
+        <div className="flex-1 overflow-y-auto py-4 px-5">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
               <p className="text-muted-foreground">Loading cart...</p>
@@ -53,29 +64,37 @@ export function CartDrawer() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium truncate">{item.item.name}</h4>
-                    <p className="text-sm text-muted-foreground">${item.item.price}</p>
-                    
+                    <p className="text-sm text-muted-foreground">
+                      ${item.item.price}
+                    </p>
+
                     {!item.in_stock && (
                       <p className="text-xs text-red-600 mt-1">
                         Only {item.max_available} available
                       </p>
                     )}
-                    
+
                     <div className="flex items-center gap-2 mt-2">
                       <Button
                         size="sm"
                         variant="outline"
                         className="h-7 w-7 p-0"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity - 1)
+                        }
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
-                      <span className="text-sm w-8 text-center">{item.quantity}</span>
+                      <span className="text-sm w-8 text-center">
+                        {item.quantity}
+                      </span>
                       <Button
                         size="sm"
                         variant="outline"
                         className="h-7 w-7 p-0"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
                         disabled={item.quantity >= item.max_available}
                       >
                         <Plus className="h-3 w-3" />
@@ -92,7 +111,7 @@ export function CartDrawer() {
                   </div>
                 </div>
               ))}
-              
+
               <div className="pt-4 border-t">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
