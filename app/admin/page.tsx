@@ -15,6 +15,8 @@ export default function AdminPanel() {
   const [showItemForm, setShowItemForm] = useState(false);
   const [showDiscountForm, setShowDiscountForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   const [itemForm, setItemForm] = useState({
     name: '',
@@ -34,7 +36,7 @@ export default function AdminPanel() {
     if (activeTab === 'items') fetchItems();
     else if (activeTab === 'discounts') fetchDiscounts();
     else if (activeTab === 'orders') fetchOrders();
-  }, [activeTab]);
+  }, [activeTab, sortBy, sortOrder]);
 
   const fetchWithAuth = async (url, options = {}) => {
     const response = await fetch(url, {
@@ -174,7 +176,7 @@ export default function AdminPanel() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const data = await fetchWithAuth(`${API_URL}/orders/admin/all`);
+      const data = await fetchWithAuth(`${API_URL}/orders/admin/all?sort_by=${sortBy}&order=${sortOrder}`);
       setOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -465,7 +467,7 @@ export default function AdminPanel() {
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 gap-4">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -475,6 +477,28 @@ export default function AdminPanel() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="date">Order Date</option>
+                  <option value="customer">Customer</option>
+                  <option value="amount">Dollars</option>
+                </select>
+                
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="desc">Descending</option>
+                  <option value="asc">Ascending</option>
+                </select>
               </div>
             </div>
 

@@ -10,7 +10,6 @@ class DiscountCodeCreate(BaseModel):
     code: str
     discount_percentage: int
 
-# Get all discount codes
 @router.get("/")
 def get_all_discounts(
     request: Request,
@@ -20,7 +19,6 @@ def get_all_discounts(
     discounts = db.query(discountCode).all()
     return discounts
 
-# Get single discount code by code string
 @router.get("/{code}")
 def get_discount_code(
     code: str,
@@ -41,7 +39,6 @@ def get_discount_code(
         "discount_percentage": discount.discount_percentage,
     }
 
-# Create new discount code
 @router.post("/")
 def create_discount_code(
     discount_data: DiscountCodeCreate,
@@ -66,7 +63,6 @@ def create_discount_code(
     db.refresh(discount)
     return discount
 
-# Delete discount code by ID
 @router.delete("/{discount_id}")
 def delete_discount_code(
     discount_id: int,

@@ -78,13 +78,11 @@ items = [
     },
 ]
 
-# Seed items
 for item_data in items:
     existing = db.query(models.Item).filter(models.Item.name == item_data["name"]).first()
     if not existing:
         create_item(db, **item_data)
 
-# Seed discount codes
 codes = [
     {"code": "THOMAS10", "discount_percentage": 10},
     {"code": "ERIC20", "discount_percentage": 20},
@@ -98,7 +96,6 @@ for code_data in codes:
         db.add(discount)
         db.commit()
 
-# Seed real users
 real_users = [
     {"clerk_user_id": "user_35a8kjDGrcHJXYuBeQ3LYmmZEzn", "name": "Zane Lakhani", "email": "zanelakhani123@gmail.com"},
     {"clerk_user_id": "user_35R7k2p0k30xaZNAaD9lOz6buuu", "name": "Thomas Bracco", "email": "thomasabr010305@gmail.com"},
@@ -114,13 +111,11 @@ for user_data in real_users:
     else:
         created_users.append(existing)
 
-# Get all items for order creation
 all_items = db.query(models.Item).all()
 
-# Seed orders
 orders_data = [
     {
-        "user": created_users[0],  # Zane
+        "user": created_users[0],
         "items": [
             {"item": all_items[0], "quantity": 2},
             {"item": all_items[4], "quantity": 1},
@@ -130,7 +125,7 @@ orders_data = [
         "days_ago": 2
     },
     {
-        "user": created_users[1],  # Thomas
+        "user": created_users[1],
         "items": [
             {"item": all_items[6], "quantity": 5},
         ],
@@ -139,7 +134,7 @@ orders_data = [
         "days_ago": 5
     },
     {
-        "user": created_users[2],  # Abraham
+        "user": created_users[2],
         "items": [
             {"item": all_items[3], "quantity": 1},
             {"item": all_items[2], "quantity": 2},
@@ -150,7 +145,7 @@ orders_data = [
         "days_ago": 7
     },
     {
-        "user": created_users[0],  # Zane
+        "user": created_users[0],
         "items": [
             {"item": all_items[1], "quantity": 3},
         ],
@@ -159,7 +154,7 @@ orders_data = [
         "days_ago": 0
     },
     {
-        "user": created_users[1],  # Thomas
+        "user": created_users[1],
         "items": [
             {"item": all_items[5], "quantity": 4},
             {"item": all_items[6], "quantity": 3},
@@ -169,7 +164,7 @@ orders_data = [
         "days_ago": 10
     },
     {
-        "user": created_users[2],  # Abraham
+        "user": created_users[2],
         "items": [
             {"item": all_items[0], "quantity": 1},
         ],
@@ -178,7 +173,7 @@ orders_data = [
         "days_ago": 3
     },
     {
-        "user": created_users[0],  # Zane
+        "user": created_users[0],
         "items": [
             {"item": all_items[4], "quantity": 2},
             {"item": all_items[7], "quantity": 2},
@@ -189,7 +184,7 @@ orders_data = [
         "days_ago": 15
     },
     {
-        "user": created_users[1],  # Thomas
+        "user": created_users[1],
         "items": [
             {"item": all_items[3], "quantity": 2},
             {"item": all_items[5], "quantity": 2},
@@ -199,7 +194,7 @@ orders_data = [
         "days_ago": 1
     },
     {
-        "user": created_users[2],  # Abraham
+        "user": created_users[2],
         "items": [
             {"item": all_items[6], "quantity": 10},
         ],
@@ -208,7 +203,7 @@ orders_data = [
         "days_ago": 20
     },
     {
-        "user": created_users[0],  # Zane
+        "user": created_users[0],
         "items": [
             {"item": all_items[1], "quantity": 1},
             {"item": all_items[0], "quantity": 1},
@@ -221,10 +216,8 @@ orders_data = [
 
 orders_created = 0
 for order_data in orders_data:
-    # Calculate order totals
     subtotal = sum(item["item"].price * item["quantity"] for item in order_data["items"])
     
-    # Calculate discount
     discount_amount = 0.0
     if order_data["discount_code"]:
         discount_obj = db.query(discountCode).filter(
@@ -237,7 +230,6 @@ for order_data in orders_data:
     tax = after_discount * 0.0825  # 8.25% tax
     total = after_discount + tax
     
-    # Create order
     order_date = datetime.now() - timedelta(days=order_data["days_ago"])
     
     order = Order(
@@ -254,7 +246,6 @@ for order_data in orders_data:
     db.add(order)
     db.flush()
     
-    # Create order items
     for item_info in order_data["items"]:
         order_item = OrderItem(
             order_id=order.id,
